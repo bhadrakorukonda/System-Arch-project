@@ -1,0 +1,77 @@
+version: "3.9"
+
+services:
+
+  # ── Storage Nodes ──────────────────────────────────────────────────────────
+  node1:
+    build:
+      context: ./node
+    environment:
+      NODE_ID: node1
+    ports:
+      - "8001:8000"
+    networks: [kvnet]
+
+  node2:
+    build:
+      context: ./node
+    environment:
+      NODE_ID: node2
+    ports:
+      - "8002:8000"
+    networks: [kvnet]
+
+  node3:
+    build:
+      context: ./node
+    environment:
+      NODE_ID: node3
+    ports:
+      - "8003:8000"
+    networks: [kvnet]
+
+  node4:
+    build:
+      context: ./node
+    environment:
+      NODE_ID: node4
+    ports:
+      - "8004:8000"
+    networks: [kvnet]
+
+  node5:
+    build:
+      context: ./node
+    environment:
+      NODE_ID: node5
+    ports:
+      - "8005:8000"
+    networks: [kvnet]
+
+  # ── Coordinator ────────────────────────────────────────────────────────────
+  coordinator:
+    build:
+      context: ./coordinator
+    environment:
+      REPLICATION_FACTOR: 3
+      WRITE_QUORUM: 2
+      READ_QUORUM: 1
+      HEALTH_INTERVAL: 5
+      NODE1_URL: http://node1:8000
+      NODE2_URL: http://node2:8000
+      NODE3_URL: http://node3:8000
+      NODE4_URL: http://node4:8000
+      NODE5_URL: http://node5:8000
+    ports:
+      - "8000:8000"
+    depends_on:
+      - node1
+      - node2
+      - node3
+      - node4
+      - node5
+    networks: [kvnet]
+
+networks:
+  kvnet:
+    driver: bridge
